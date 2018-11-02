@@ -8,8 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -32,20 +34,34 @@ public class TimeEntryApiTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @LocalServerPort
+    private String port;
+
+
+
     private final long projectId = 123L;
     private final long userId = 456L;
     private TimeEntry timeEntry = new TimeEntry(projectId, userId, LocalDate.parse("2017-01-08"), 8);
 
 
+//    @Before
+//    public void setUp() throws Exception {
+//        MysqlDataSource dataSource = new MysqlDataSource();
+//        dataSource.setUrl(System.getenv("SPRING_DATASOURCE_URL"));
+//
+//        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+//        jdbcTemplate.execute("TRUNCATE time_entries");
+//
+//        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+//    }
+
     @Before
     public void setUp() throws Exception {
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setUrl(System.getenv("SPRING_DATASOURCE_URL"));
+        RestTemplateBuilder builder = new RestTemplateBuilder()
+                .rootUri("http://localhost:" + port)
+                .basicAuthorization("user", "password");
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.execute("TRUNCATE time_entries");
-
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        restTemplate = new TestRestTemplate(builder);
     }
 
     @Test

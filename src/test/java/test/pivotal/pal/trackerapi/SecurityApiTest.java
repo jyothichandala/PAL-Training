@@ -34,6 +34,7 @@ public class SecurityApiTest {
             .basicAuthorization("user", "password");
 
         authorizedRestTemplate = new TestRestTemplate(builder);
+
     }
 
     @Test
